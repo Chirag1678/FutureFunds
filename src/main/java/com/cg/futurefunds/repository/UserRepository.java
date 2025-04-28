@@ -1,5 +1,9 @@
 package com.cg.futurefunds.repository;
 
-public interface UserRepository {
+import com.cg.futurefunds.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByEmail(String email);
 }
+
