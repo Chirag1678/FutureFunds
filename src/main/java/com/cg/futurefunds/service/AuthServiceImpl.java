@@ -1,7 +1,9 @@
 package com.cg.futurefunds.service;
 
+import java.util.Random;
 import java.util.StringTokenizer;
 
+import com.cg.futurefunds.dto.RegisterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +27,33 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired
 	private BCryptPasswordEncoder encoder;
+
+	private  String generateOtp(){
+		Random random = new Random();
+		int otp = 100000 + random.nextInt(900000);
+		return  String.valueOf(otp);
+	}
+
+	@Override
+	public ResponseDTO registerUser(RegisterDTO registerDTO){
+		if(userRepository.findByEmail(registerDTO.getEmail()).isPresent()){
+			throw new FutureFundsException("Email is already registered");
+		}
+		User user = new User();
+		user.setName(registerDTO.getFullName());
+		user.setEmail(registerDTO.getEmail());
+		user.setPassword(encoder.encode(registerDTO.getPassword()));
+		user.setVerified(false);
+
+		String otp=generateOtp();
+		user.setOtp(otp);
+
+		userRepository.save(user);
+
+		return new ResponseDTO("User registered successfuly",HttpStatus.CREATED.value(),null);
+
+	}
+
 
 	@Override
 	public ResponseDTO userVerification(LoginDTO loginDTO) {

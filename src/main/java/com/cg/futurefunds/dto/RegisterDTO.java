@@ -18,10 +18,12 @@ public class RegisterDTO {
 	private String fullName;
 	
 	@NotBlank(message = "Email cannot be empty")
-	@Email
+	@Email(message = "Invalid email format")
 	private String email;
-	
-	
+
+	@NotBlank(message = "Password cannot be Empty")
+	@Size(min = 6, message = "Password must be at least 6 characters long")
+	@Pattern(regexp =  "^(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{6,}$",message = "Password must include at least one uppercase letter and one digit")
 	private String password;
 	
 	
