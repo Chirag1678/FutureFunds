@@ -20,7 +20,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -33,20 +32,13 @@ public class User {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
-    @Column(name = "email")
     private String email;
 
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
-    @Column(name = "password")
     private String password;
 
-    @Column(name = "is_verified")
     private boolean isVerified;
 
-    @NotBlank(message = "OTP cannot be empty")
-    @Size(min = 6, max = 6, message = "OTP must be 6 digits")
-    @Pattern(regexp = "\\d{6}", message = "OTP must contain only digits")
-    @Column(name = "otp")
     private String otp;
 }
