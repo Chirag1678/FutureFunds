@@ -10,20 +10,17 @@ import lombok.Data;
 @Data
 
 public class UpdateUserDTO {
+    @NotBlank(message = "Old Email cannot be empty")
+    @Email(message = "Invalid email format")
+    private String oldEmail;
 
-
-    @NotBlank(message = "Full Name Cannot be empty")
     @Size(min=4,message = "Full Name must contain at least four characters")
     @Pattern(regexp = "^[A-Z][a-z]+\\s[A-Z][a-z]+$", message = "Name must be in format: Firstname Lastname")
     private String name;
 
-    @NotBlank(message = "Email cannot be empty")
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "Old Email cannot be empty")
-    @Email(message = "Invalid email format")
-    private String oldEmail;
 
 
 

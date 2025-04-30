@@ -19,7 +19,7 @@ public class JwtUtility {
 	@Autowired
 	private UserRepository userRepository;
 	
-	private static final String SECRET_KEY = "futurefundsprojectsecretkey";
+	private static final String SECRET_KEY = "futurefundsprojectsecretkeyextended";
 	
 	private Key generateKey() {
 		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
