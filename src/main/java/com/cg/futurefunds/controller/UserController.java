@@ -17,45 +17,45 @@ import jakarta.validation.Valid;
 @RequestMapping("/user")
 public class UserController {
 	@Autowired
-	private UserService authService;
+	private UserService userService;
 
 	@PostMapping("/register")
 	public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
-		ResponseDTO responseDTO = authService.registerUser(registerDTO);
+		ResponseDTO responseDTO = userService.registerUser(registerDTO);
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 	
 	@PostMapping("/login")
 	public ResponseEntity<ResponseDTO> userLogin(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = authService.userLogin(loginDTO);
+		ResponseDTO responseDTO = userService.userLogin(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
 	@PostMapping("/forgot")
 	public ResponseEntity<ResponseDTO> forgotPassword(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = authService.forgotPassword(loginDTO);
+		ResponseDTO responseDTO = userService.forgotPassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
 	@PostMapping("/verify")
 	public ResponseEntity<ResponseDTO> userVerification(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = authService.userVerification(loginDTO);
+		ResponseDTO responseDTO = userService.userVerification(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
 	@PostMapping("/reset")
 	public ResponseEntity<ResponseDTO> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = authService.resetPassword(loginDTO);
+		ResponseDTO responseDTO = userService.resetPassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
 	@PutMapping("/update")
 	public ResponseEntity<ResponseDTO> updateUserDetails(@Valid @RequestBody UpdateUserDTO updateUserDTO){
-		ResponseDTO responseDTO=authService.updateUserDetails(updateUserDTO);
+		ResponseDTO responseDTO=userService.updateUserDetails(updateUserDTO);
 
 		return new ResponseEntity<>(responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 
