@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-
 	@Override
 	public ResponseDTO userLogin(LoginDTO loginDTO) {
 		User user = userRepository.findByEmail(loginDTO.getEmail())
@@ -112,6 +111,4 @@ public class UserServiceImpl implements UserService {
 
 		return new ResponseDTO("User verified successfully", HttpStatus.OK.value(), null);
 	}
-
-
 }
