@@ -34,6 +34,13 @@ public class UserController {
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
+	@PostMapping("/forgot")
+	public ResponseEntity<ResponseDTO> forgotPassword(@Valid @RequestBody LoginDTO loginDTO) {
+		ResponseDTO responseDTO = authService.forgotPassword(loginDTO);
+
+		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
+	}
+
 	@PostMapping("/verify")
 	public ResponseEntity<ResponseDTO> userVerification(@Valid @RequestBody LoginDTO loginDTO) {
 		ResponseDTO responseDTO = authService.userVerification(loginDTO);
@@ -41,4 +48,10 @@ public class UserController {
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
+	@PostMapping("/reset")
+	public ResponseEntity<ResponseDTO> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
+		ResponseDTO responseDTO = authService.resetPassword(loginDTO);
+
+		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
+	}
 }
