@@ -1,13 +1,11 @@
 package com.cg.futurefunds.controller;
 
 import com.cg.futurefunds.dto.RegisterDTO;
+import com.cg.futurefunds.dto.UpdateUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cg.futurefunds.dto.LoginDTO;
 import com.cg.futurefunds.dto.ResponseDTO;
@@ -39,6 +37,14 @@ public class UserController {
 		ResponseDTO responseDTO = authService.userVerification(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
+	}
+
+	@PutMapping("/update")
+	public ResponseEntity<ResponseDTO> updateUserDetails(@Valid @RequestBody UpdateUserDTO updateUserDTO){
+		ResponseDTO responseDTO=authService.updateUserDetails(updateUserDTO);
+
+		return new ResponseEntity<>(responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
+
 	}
 
 }

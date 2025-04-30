@@ -2,15 +2,12 @@ package com.cg.futurefunds.service;
 
 import java.util.Random;
 
-import com.cg.futurefunds.dto.RegisterDTO;
+import com.cg.futurefunds.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.cg.futurefunds.dto.LoginDTO;
-import com.cg.futurefunds.dto.ResponseDTO;
-import com.cg.futurefunds.dto.UserResponseDTO;
 import com.cg.futurefunds.exceptions.FutureFundsException;
 import com.cg.futurefunds.model.User;
 import com.cg.futurefunds.repository.UserRepository;
@@ -111,6 +108,28 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 
 		return new ResponseDTO("User verified successfully", HttpStatus.OK.value(), null);
+	}
+
+	@Override
+	public ResponseDTO resetPassword(LoginDTO loginDTO) {
+		return null;
+	}
+
+	@Override
+	public ResponseDTO updateUserDetails(UpdateUserDTO updateUserDTO) {
+		User user=userRepository.findByEmail(updateUserDTO.getOldEmail())
+				.orElseThrow(()-> new FutureFundsException("User with email : "+updateUserDTO.getOldEmail()+ " does not exist."));
+
+		user.setEmail(updateUserDTO.getEmail());
+		user.setName(updateUserDTO.getName());
+		userRepository.save(user);
+
+		UserResponseDTO userResponseDTO = new UserResponseDTO();
+		userResponseDTO.setName(user.getName());
+		userResponseDTO.setEmail(user.getEmail());
+		userResponseDTO.setVerified(user.isVerified());
+
+		return new ResponseDTO("User updated succesfully ",HttpStatus.OK.value(),userResponseDTO);
 	}
 
 
