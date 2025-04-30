@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cg.futurefunds.dto.LoginDTO;
 import com.cg.futurefunds.dto.ResponseDTO;
-import com.cg.futurefunds.service.AuthService;
+import com.cg.futurefunds.service.UserService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
-public class AuthController {
+@RequestMapping("/user")
+public class UserController {
 	@Autowired
-	private AuthService authService;
+	private UserService authService;
 
 	@PostMapping("/register")
 	public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
@@ -27,17 +27,18 @@ public class AuthController {
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 	
-	@PostMapping("/verify")
-	public ResponseEntity<ResponseDTO> userVerification(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = authService.userVerification(loginDTO);
-		
-		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
-	}
-	
 	@PostMapping("/login")
 	public ResponseEntity<ResponseDTO> userLogin(@Valid @RequestBody LoginDTO loginDTO) {
 		ResponseDTO responseDTO = authService.userLogin(loginDTO);
-		
+
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
+
+	@PostMapping("/verify")
+	public ResponseEntity<ResponseDTO> userVerification(@Valid @RequestBody LoginDTO loginDTO) {
+		ResponseDTO responseDTO = authService.userVerification(loginDTO);
+
+		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
+	}
+
 }

@@ -18,6 +18,6 @@ public class LoginDTO {
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
     
-    @Size(min = 6, max = 6, message = "Invlid Otp, try again")
+    @Size(min = 6, max = 6, message = "Invalid Otp, try again")
     private String otp;
 }
