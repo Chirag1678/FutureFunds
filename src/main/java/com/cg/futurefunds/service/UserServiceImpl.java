@@ -113,5 +113,23 @@ public class UserServiceImpl implements UserService {
 		return new ResponseDTO("User verified successfully", HttpStatus.OK.value(), null);
 	}
 
+	@Override
+	public ResponseDTO resetPassword(LoginDTO loginDTO) {
+		User user = userRepository.findByEmail(loginDTO.getEmail())
+				.orElseThrow(() -> new FutureFundsException("User with email: " + loginDTO.getEmail() + " not exists."));
+
+		if(user.isVerified()) {
+			user.setPassword(encoder.encode(loginDTO.getPassword()));
+			user.setOtp(null);
+		} else {
+			throw new FutureFundsException("User email is not verified yet");
+		}
+
+		userRepository.save(user);
+
+		return new ResponseDTO("Password reset successfully", HttpStatus.OK.value(), null);
+	}
+
+
 
 }
