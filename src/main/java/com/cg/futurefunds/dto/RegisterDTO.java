@@ -13,8 +13,8 @@ public class RegisterDTO {
 	
 	
 	@NotBlank(message = "Full Name Cannot be empty")
-	@Size(min=4,message = "Full Name must contain atleast four characters")
-	@Pattern(regexp = "^[A-Z][a-zA-Z]*$",message = "Name must start with capital letter and should only contain characters")
+	@Size(min=4,message = "Full Name must contain at least four characters")
+	@Pattern(regexp = "^[A-Z][a-z]+\\s[A-Z][a-z]+$", message = "Name must be in format: Firstname Lastname")
 	private String fullName;
 	
 	@NotBlank(message = "Email cannot be empty")

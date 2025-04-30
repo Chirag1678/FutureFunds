@@ -17,7 +17,7 @@ import com.cg.futurefunds.repository.UserRepository;
 import com.cg.futurefunds.utility.JwtUtility;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -42,57 +42,76 @@ public class AuthServiceImpl implements AuthService {
 		user.setName(registerDTO.getFullName());
 		user.setEmail(registerDTO.getEmail());
 		user.setPassword(encoder.encode(registerDTO.getPassword()));
-		user.setVerified(false);
+		user.setOtp(null);
+		user.setVerified(true);
+		userRepository.save(user);
 
-		String otp=generateOtp();
-		user.setOtp(otp);
+		UserResponseDTO userResponseDTO = new UserResponseDTO();
+		userResponseDTO.setName(user.getName());
+		userResponseDTO.setEmail(user.getEmail());
+		userResponseDTO.setVerified(user.isVerified());
+
+		return new ResponseDTO("User registered successfully",HttpStatus.CREATED.value(),userResponseDTO);
+
+	}
+
+
+	@Override
+	public ResponseDTO userLogin(LoginDTO loginDTO) {
+		User user = userRepository.findByEmail(loginDTO.getEmail())
+				.orElseThrow(() -> new FutureFundsException("Invalid login credentials, try again."));
+
+        if (!user.isVerified()) {
+            throw new FutureFundsException("User email is not verified yet");
+        }
+
+        if (!encoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            throw new FutureFundsException("Invalid login credentials, try again.");
+        }
+
+
+        String token = jwtUtility.generateToken(loginDTO.getEmail(), user.getId());
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setName(user.getName());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setVerified(user.isVerified());
+        userResponseDTO.setToken(token);
+
+        return new ResponseDTO("User logged in successfully", HttpStatus.OK.value(), userResponseDTO);
+	}
+
+	@Override
+	public ResponseDTO forgotPassword(LoginDTO loginDTO) {
+		User user = userRepository.findByEmail(loginDTO.getEmail())
+				.orElseThrow(() -> new FutureFundsException("User with email: " + loginDTO.getEmail() + " not exists."));
+
+		user.setOtp(generateOtp());
+		user.setVerified(false);
 
 		userRepository.save(user);
 
-		return new ResponseDTO("User registered successfuly",HttpStatus.CREATED.value(),null);
-
+		return new ResponseDTO("Otp sent successfully", HttpStatus.OK.value(), null);
 	}
 
 	@Override
 	public ResponseDTO userVerification(LoginDTO loginDTO) {
 		User user = userRepository.findByEmail(loginDTO.getEmail())
 				.orElseThrow(() -> new FutureFundsException("User with email: " + loginDTO.getEmail() + " not exists."));
-		
+
 		if(!user.isVerified()) {
 			if(user.getOtp().equals(loginDTO.getOtp())) {
 				user.setOtp(null);
 				user.setVerified(true);
 			} else {
-				throw new FutureFundsException("Invaid otp, try again");
+				throw new FutureFundsException("Invalid otp, try again");
 			}
 		}
-		
+
+		userRepository.save(user);
+
 		return new ResponseDTO("User verified successfully", HttpStatus.OK.value(), null);
 	}
-	
-	@Override
-	public ResponseDTO userLogin(LoginDTO loginDTO) {
-		User user = userRepository.findByEmail(loginDTO.getEmail())
-				.orElseThrow(() -> new FutureFundsException("Invalid login credentials, try again."));
 
-
-        if (!encoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            throw new FutureFundsException("Invalid login credentials, try again.");
-        }
-
-        if (!user.isVerified()) {
-            throw new FutureFundsException("User email is not verified yet");
-        }
-
-        String token = jwtUtility.generateToken(loginDTO.getEmail(), user.getId());
-        
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setName(user.getName());
-        userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setVerified(user.isVerified());
-        userResponseDTO.setToken(token);
-        
-        return new ResponseDTO("User logged in successfully", HttpStatus.OK.value(), userResponseDTO);
-	}
 
 }
