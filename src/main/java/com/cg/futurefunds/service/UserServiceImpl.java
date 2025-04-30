@@ -3,6 +3,7 @@ package com.cg.futurefunds.service;
 import java.util.Random;
 
 import com.cg.futurefunds.dto.RegisterDTO;
+import com.cg.futurefunds.utility.MailSenderUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +27,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private BCryptPasswordEncoder encoder;
+
+	@Autowired
+	private MailSenderUtility mailSenderUtility;
 
 	private  String generateOtp(){
 		Random random = new Random();
@@ -54,7 +58,6 @@ public class UserServiceImpl implements UserService {
 		return new ResponseDTO("User registered successfully",HttpStatus.CREATED.value(),userResponseDTO);
 
 	}
-
 
 	@Override
 	public ResponseDTO userLogin(LoginDTO loginDTO) {
@@ -91,6 +94,11 @@ public class UserServiceImpl implements UserService {
 
 		userRepository.save(user);
 
+		String to = user.getEmail();
+		String subject = "OTP to reset password";
+		String body = "Your OTP to reset password is: " + user.getOtp() + ". Please enter this OTP in the reset password form to reset your password.";
+		mailSenderUtility.sendEmail(to, subject, body);
+
 		return new ResponseDTO("Otp sent successfully", HttpStatus.OK.value(), null);
 	}
 
@@ -103,14 +111,14 @@ public class UserServiceImpl implements UserService {
 			if(user.getOtp().equals(loginDTO.getOtp())) {
 				user.setOtp(null);
 				user.setVerified(true);
+				userRepository.save(user);
+				return resetPassword(loginDTO);
 			} else {
 				throw new FutureFundsException("Invalid otp, try again");
 			}
 		}
 
-		userRepository.save(user);
-
-		return new ResponseDTO("User verified successfully", HttpStatus.OK.value(), null);
+		return new ResponseDTO("You can change password only once", HttpStatus.BAD_REQUEST.value(), null);
 	}
 
 	@Override
@@ -129,7 +137,5 @@ public class UserServiceImpl implements UserService {
 
 		return new ResponseDTO("Password reset successfully", HttpStatus.OK.value(), null);
 	}
-
-
 
 }
