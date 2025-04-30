@@ -1,5 +1,6 @@
 package com.cg.futurefunds.controller;
 
+import com.cg.futurefunds.dto.RegisterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,12 @@ import jakarta.validation.Valid;
 public class AuthController {
 	@Autowired
 	private AuthService authService;
+
+	@PostMapping("/register")
+	public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
+		ResponseDTO responseDTO = authService.registerUser(registerDTO);
+		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
+	}
 	
 	@PostMapping("/verify")
 	public ResponseEntity<ResponseDTO> userVerification(@Valid @RequestBody LoginDTO loginDTO) {
