@@ -1,6 +1,7 @@
 package com.cg.futurefunds.dto;
 
 import com.cg.futurefunds.model.InvestmentType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 
 @Data
 @RequiredArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class InvestmentResponseDTO {
     private String name;
     private InvestmentType type;
