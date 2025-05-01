@@ -39,7 +39,9 @@ public class InvestmentController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<ResponseDTO> getAllInvestments(@PathVariable Long userId) {
-        return null;
+
+        ResponseDTO responseDTO = investmentService.getAllInvestments(userId);
+        return  new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
     }
 
     @GetMapping("/{id}")

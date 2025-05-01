@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InvestmentServiceImpl implements InvestmentService {
@@ -87,7 +89,19 @@ public class InvestmentServiceImpl implements InvestmentService {
 
     @Override
     public ResponseDTO getAllInvestments(Long userId) {
-        return null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new FutureFundsException("User with id"+ userId +"does not exist"));
+
+        List<InvestmentPlan> plans = investmentPlanRepository.findByUserId(userId);
+
+        if(plans.isEmpty()){
+            return  new ResponseDTO("No Investment plans found by user",404,null);
+        }
+        List<InvestmentResponseDTO> investmentResponseDTOList = plans.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return new ResponseDTO("Investment Plans Retrieved Successfully",200,investmentResponseDTOList);
+
     }
 
     @Override
