@@ -1,5 +1,6 @@
 package com.cg.futurefunds.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,5 +22,10 @@ public class Goal {
     private double target_value;
     private double progress;
     private double target_date;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonManagedReference
+    private User user;
 }
 

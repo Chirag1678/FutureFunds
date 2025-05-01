@@ -15,7 +15,7 @@ public class MailSenderUtility {
 
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("Stock Portfolio <${USER_MAIL}>");
+        message.setFrom("Future Funds <${USER_MAIL}>");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
@@ -28,7 +28,7 @@ public class MailSenderUtility {
 
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setFrom("Stock Portfolio <${USER_MAIL}>");
+        helper.setFrom("Future Funds <${USER_MAIL}>");
 
         helper.setTo(to);
         helper.setSubject(subject);
