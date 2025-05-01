@@ -22,9 +22,10 @@ public class InvestmentController {
         return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{investmentId}")
     public ResponseEntity<ResponseDTO> updateInvestment(@PathVariable Long investmentId, @Valid @RequestBody InvestmentPlanDTO investmentPlanDTO) {
-        return null;
+        ResponseDTO responseDTO = investmentService.updateInvestment(investmentId,investmentPlanDTO);
+        return  new ResponseEntity<>(responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
     }
 
     @DeleteMapping("/{id}")
