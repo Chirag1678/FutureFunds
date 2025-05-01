@@ -1,5 +1,6 @@
 package com.cg.futurefunds.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -34,6 +35,7 @@ public class User implements UserDetails {
     private String otp;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<InvestmentPlan> investmentPlans;
 
     @Override

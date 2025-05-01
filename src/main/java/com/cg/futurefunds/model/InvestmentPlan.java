@@ -1,8 +1,11 @@
 package com.cg.futurefunds.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -24,8 +27,10 @@ public class InvestmentPlan {
     private int duration_months;
     private double target_amount;
     private double current_value;
+    private LocalDate startDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonManagedReference
     private User user;
 }
