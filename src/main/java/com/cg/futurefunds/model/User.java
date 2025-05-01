@@ -39,6 +39,7 @@ public class User implements UserDetails {
     private List<InvestmentPlan> investmentPlans;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     List<Goal> goals;
 
     @Override
