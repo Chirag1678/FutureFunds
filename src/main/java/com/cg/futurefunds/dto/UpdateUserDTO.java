@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-
 public class UpdateUserDTO {
     @NotBlank(message = "Old Email cannot be empty")
     @Email(message = "Invalid email format")
