@@ -38,6 +38,9 @@ public class User implements UserDetails {
     @JsonBackReference
     private List<InvestmentPlan> investmentPlans;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Goal> goals;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("USER"));

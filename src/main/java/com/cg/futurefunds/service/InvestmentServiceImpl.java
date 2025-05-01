@@ -46,7 +46,29 @@ public class InvestmentServiceImpl implements InvestmentService {
 
     @Override
     public ResponseDTO updateInvestment(Long investmentId, InvestmentPlanDTO investmentPlanDTO) {
-        return null;
+        InvestmentPlan investmentPlan = investmentPlanRepository.findById(investmentId)
+                .orElseThrow(() ->  new FutureFundsException("Investment with Id" + investmentId + "not found"));
+
+        User user = userRepository.findByEmail(investmentPlanDTO.getUserEmail())
+                .orElseThrow(() -> new FutureFundsException("User with Email"+investmentPlanDTO.getUserEmail()+"not found"));
+
+                investmentPlan.setName(investmentPlanDTO.getName());
+                investmentPlan.setType(investmentPlanDTO.getType());
+                investmentPlan.setMonthly_amount(investmentPlanDTO.getMonthlyAmount());
+                investmentPlan.setExpected_return(investmentPlanDTO.getExpectedReturn());
+                investmentPlan.setDuration_months(investmentPlanDTO.getDurationMonths());
+                investmentPlan.setUser(user);
+
+                double targetAmount = getTargetAmount(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),investmentPlanDTO.getDurationMonths());
+                int completedMonths = getCompletedMonths(investmentPlan.getStartDate());
+                double currentValue = calculateCurrentValue(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),completedMonths);
+                investmentPlan.setTarget_amount(targetAmount);
+                investmentPlan.setCurrent_value(currentValue);
+
+                investmentPlanRepository.save(investmentPlan);
+
+                InvestmentResponseDTO responseDTO = convertToResponse(investmentPlan);
+                return  new ResponseDTO("Investment Updated Successfully",200,responseDTO);
     }
 
     @Override

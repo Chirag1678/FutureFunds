@@ -25,7 +25,9 @@ public class InvestmentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDTO> updateInvestment(@PathVariable Long id, @Valid @RequestBody InvestmentPlanDTO investmentPlanDTO) {
-        return null;
+        ResponseDTO responseDTO = investmentService.updateInvestment(id,investmentPlanDTO);
+
+        return  new ResponseEntity<>(responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
     }
 
     @DeleteMapping("/{id}")
