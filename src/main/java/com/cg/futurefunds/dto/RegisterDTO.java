@@ -8,10 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-
 public class RegisterDTO {
-	
-	
 	@NotBlank(message = "Full Name Cannot be empty")
 	@Size(min=4,message = "Full Name must contain atleast four characters")
 	@Pattern(regexp = "^[A-Z][a-zA-Z]*$",message = "Name must start with capital letter and should only contain characters")
