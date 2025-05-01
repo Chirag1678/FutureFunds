@@ -56,10 +56,10 @@ public class InvestmentServiceImpl implements InvestmentService {
             InvestmentPlan investmentPlan=investmentPlanRepository.getReferenceById(investmentId);
             investmentPlanRepository.delete(investmentPlan);
             InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
-            return new ResponseDTO("Investement Plan Deleted Succesfully",200,null);
+            return new ResponseDTO("Investment Plan Deleted Successfully", 200, null);
         }
         catch (Exception e) {
-            throw new FutureFundsException("Investement Plan does not Exist");
+            throw new FutureFundsException("Investment Plan does not Exist");
         }
     }
 
@@ -74,7 +74,7 @@ public class InvestmentServiceImpl implements InvestmentService {
         try{
             InvestmentPlan investmentPlan=investmentPlanRepository.getReferenceById(investmentId);
             InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
-            return new ResponseDTO("Investement Plan Details",200,investmentResponseDTO);
+            return new ResponseDTO("Investment Plan Details", 200, investmentResponseDTO);
         } catch (Exception e) {
             throw new FutureFundsException("No investment plan found with given id");
         }
