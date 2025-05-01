@@ -32,7 +32,7 @@ public class InvestmentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO> deleteInvestment(@PathVariable Long id) {
-        ResponseDTO responseDTO=investmentService.deleteInvestment(id);
+        ResponseDTO responseDTO = investmentService.deleteInvestment(id);
 
         return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
     }
@@ -46,7 +46,7 @@ public class InvestmentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDTO> getInvestment(@PathVariable Long id) {
-        ResponseDTO responseDTO=investmentService.getInvestment(id);
+        ResponseDTO responseDTO = investmentService.getInvestment(id);
 
         return new ResponseEntity<> (responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 

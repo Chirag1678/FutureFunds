@@ -52,6 +52,11 @@ public class UserServiceImpl implements UserService {
 		userResponseDTO.setEmail(user.getEmail());
 		userResponseDTO.setVerified(user.isVerified());
 
+		String to = user.getEmail();
+		String subject = "Welcome to Future Funds";
+		String body = "Welcome to Future Funds. Your account has been created successfully. Explore our features and start investing today.";
+		mailSenderUtility.sendEmail(to, subject, body);
+
 		return new ResponseDTO("User registered successfully",HttpStatus.CREATED.value(),userResponseDTO);
 
 	}
@@ -72,10 +77,7 @@ public class UserServiceImpl implements UserService {
 
         String token = jwtUtility.generateToken(loginDTO.getEmail(), user.getId());
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setName(user.getName());
-        userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setVerified(user.isVerified());
+        UserResponseDTO userResponseDTO = convertToUserResponseDTO(user);
         userResponseDTO.setToken(token);
 
         return new ResponseDTO("User logged in successfully", HttpStatus.OK.value(), userResponseDTO);
@@ -144,11 +146,16 @@ public class UserServiceImpl implements UserService {
 		user.setName(updateUserDTO.getName());
 		userRepository.save(user);
 
+		UserResponseDTO userResponseDTO = convertToUserResponseDTO(user);
+
+		return new ResponseDTO("User updated successfully ",HttpStatus.OK.value(),userResponseDTO);
+	}
+
+	public UserResponseDTO convertToUserResponseDTO(User user) {
 		UserResponseDTO userResponseDTO = new UserResponseDTO();
 		userResponseDTO.setName(user.getName());
 		userResponseDTO.setEmail(user.getEmail());
 		userResponseDTO.setVerified(user.isVerified());
-
-		return new ResponseDTO("User updated successfully ",HttpStatus.OK.value(),userResponseDTO);
+		return userResponseDTO;
 	}
 }
