@@ -27,10 +27,4 @@ public class InvestmentPlanDTO {
 
     @Positive(message = "Duration must be greater than 0")
     private int durationMonths;
-
-    @Positive(message = "Target amount must be greater than 0")
-    private double targetAmount;
-
-    @PositiveOrZero(message = "Current value cannot be negative")
-    private double currentValue;
 }
