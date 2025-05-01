@@ -28,4 +28,7 @@ public class InvestmentPlan {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Goal goal;
 }
