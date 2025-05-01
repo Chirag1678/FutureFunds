@@ -73,7 +73,16 @@ public class InvestmentServiceImpl implements InvestmentService {
 
     @Override
     public ResponseDTO deleteInvestment(Long investmentId) {
-        return null;
+
+        try{
+            InvestmentPlan investmentPlan=investmentPlanRepository.getReferenceById(investmentId);
+            investmentPlanRepository.delete(investmentPlan);
+            InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
+            return new ResponseDTO("Investement Plan Deleted Succesfully",200,null);
+        }
+        catch (Exception e) {
+            throw new FutureFundsException("Investement Plan does not Exist");
+        }
     }
 
     @Override
@@ -83,7 +92,14 @@ public class InvestmentServiceImpl implements InvestmentService {
 
     @Override
     public ResponseDTO getInvestment(Long investmentId) {
-        return null;
+
+        try{
+            InvestmentPlan investmentPlan=investmentPlanRepository.getReferenceById(investmentId);
+            InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
+            return new ResponseDTO("Investement Plan Details",200,investmentResponseDTO);
+        } catch (Exception e) {
+            throw new FutureFundsException("No investment plan found with given id");
+        }
     }
 
     public Double getTargetAmount(Double monthlyAmount, Double expectedReturn, Integer durationMonths) {

@@ -33,4 +33,7 @@ public class InvestmentPlan {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonManagedReference
     private User user;
+
+    @OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Goal goal;
 }
