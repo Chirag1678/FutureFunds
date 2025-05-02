@@ -7,5 +7,5 @@ public interface NotificationService {
     ResponseDTO createNotification(NotificationDTO notificationDTO);
     ResponseDTO updateNotification(Long notificationId, NotificationDTO notificationDTO);
     ResponseDTO deleteNotification(Long notificationId);
-    ResponseDTO scheduleNotification(Long notificationId);
+    ResponseDTO sendNotification(Long notificationId);
 }

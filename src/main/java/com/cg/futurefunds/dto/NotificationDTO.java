@@ -1,7 +1,10 @@
 package com.cg.futurefunds.dto;
 
+import com.cg.futurefunds.model.NotificationType;
 import com.cg.futurefunds.validation.AtLeastOne;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 @AtLeastOne
 @Data
 @RequiredArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationDTO {
     private Long investmentId;
     private Long goalId;
@@ -18,10 +22,11 @@ public class NotificationDTO {
     private String title;
 
     @NotBlank(message = "Message cannot be empty")
-    @Size(min = 4, max = 1000, message = "Message must not exceed 1000 characters")
+    @Size(min = 4, message = "Message must be at least 4 characters")
     private String message;
 
-    @NotBlank(message = "Type cannot be empty")
-    @Size(min = 4, max = 100, message = "Type must not exceed 100 characters")
-    private String type;
+    @NotNull(message = "Notification type is required")
+    private NotificationType type;
+
+    private String scheduledAt;
 }

@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ResponseDTO userVerification(LoginDTO loginDTO) {
+	public ResponseDTO resetPassword(LoginDTO loginDTO) {
 		User user = userRepository.findByEmail(loginDTO.getEmail())
 				.orElseThrow(() -> new FutureFundsException("User with email: " + loginDTO.getEmail() + " not exists."));
 
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ResponseDTO resetPassword(LoginDTO loginDTO) {
+	public ResponseDTO changePassword(LoginDTO loginDTO) {
 		User user = userRepository.findByEmail(loginDTO.getEmail())
 				.orElseThrow(() -> new FutureFundsException("User with email: " + loginDTO.getEmail() + " not exists."));
 

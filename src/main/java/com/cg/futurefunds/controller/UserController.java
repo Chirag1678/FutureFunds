@@ -39,16 +39,16 @@ public class UserController {
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/verify")
-	public ResponseEntity<ResponseDTO> userVerification(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = userService.userVerification(loginDTO);
+	@PostMapping("/reset")
+	public ResponseEntity<ResponseDTO> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
+		ResponseDTO responseDTO = userService.resetPassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/reset")
-	public ResponseEntity<ResponseDTO> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = userService.resetPassword(loginDTO);
+	@PostMapping("/change")
+	public ResponseEntity<ResponseDTO> changePassword(@Valid @RequestBody LoginDTO loginDTO) {
+		ResponseDTO responseDTO = userService.changePassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}

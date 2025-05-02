@@ -30,6 +30,7 @@ public class InvestmentPlan {
     private double target_amount;
     private double current_value;
     private LocalDate startDate;
+    private LocalDate nextPaymentDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

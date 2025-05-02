@@ -17,9 +17,15 @@ public class Notification {
     @Column(name = "notification_id")
     private Long id;
     private String title;
+
+    @Column(columnDefinition = "TEXT")
     private String message;
-    private String type;
+
     private LocalDateTime scheduledAt;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

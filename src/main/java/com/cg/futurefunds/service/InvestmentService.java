@@ -1,7 +1,9 @@
 package com.cg.futurefunds.service;
 
 import com.cg.futurefunds.dto.InvestmentPlanDTO;
+import com.cg.futurefunds.dto.InvestmentResponseDTO;
 import com.cg.futurefunds.dto.ResponseDTO;
+import com.cg.futurefunds.model.InvestmentPlan;
 
 public interface InvestmentService {
     ResponseDTO addInvestment(InvestmentPlanDTO investmentPlanDTO);
@@ -9,4 +11,5 @@ public interface InvestmentService {
     ResponseDTO deleteInvestment(Long investmentId);
     ResponseDTO getAllInvestments(Long userId);
     ResponseDTO getInvestment(Long investmentId);
+    InvestmentResponseDTO convertToResponse(InvestmentPlan investmentPlan);
 }
