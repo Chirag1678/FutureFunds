@@ -42,7 +42,7 @@ public class InvestmentServiceImpl implements InvestmentService {
 
         InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
 
-        return new ResponseDTO("Investment plan added successfully", 201, investmentResponseDTO);
+        return new ResponseDTO("Investment plan added successfully", 200, investmentResponseDTO);
     }
 
 
@@ -70,7 +70,7 @@ public class InvestmentServiceImpl implements InvestmentService {
                 investmentPlanRepository.save(investmentPlan);
 
                 InvestmentResponseDTO responseDTO = convertToResponse(investmentPlan);
-                return  new ResponseDTO("Investment Updated Successfully",200,responseDTO);
+                return  new ResponseDTO("Investment Updated Successfully",200, responseDTO);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class InvestmentServiceImpl implements InvestmentService {
             InvestmentPlan investmentPlan=investmentPlanRepository.getReferenceById(investmentId);
             investmentPlanRepository.delete(investmentPlan);
             InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
-            return new ResponseDTO("Investment Plan Deleted Successfully", 200, null);
+            return new ResponseDTO("Investment Plan Deleted Successfully", 200,null);
         }
         catch (Exception e) {
             throw new FutureFundsException("Investment Plan does not Exist");
@@ -95,12 +95,12 @@ public class InvestmentServiceImpl implements InvestmentService {
         List<InvestmentPlan> plans = investmentPlanRepository.findByUserId(userId);
 
         if(plans.isEmpty()){
-            return  new ResponseDTO("No Investment plans found by user",404,null);
+            return  new ResponseDTO("No Investment plans found by user", 404,null);
         }
         List<InvestmentResponseDTO> investmentResponseDTOList = plans.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
-        return new ResponseDTO("Investment Plans Retrieved Successfully",200,investmentResponseDTOList);
+        return new ResponseDTO("Investment Plans Retrieved Successfully",  200,investmentResponseDTOList);
 
     }
 
@@ -110,7 +110,7 @@ public class InvestmentServiceImpl implements InvestmentService {
         try{
             InvestmentPlan investmentPlan=investmentPlanRepository.getReferenceById(investmentId);
             InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
-            return new ResponseDTO("Investment Plan Details", 200, investmentResponseDTO);
+            return new ResponseDTO("Investment Plan Details", 200,investmentResponseDTO);
         } catch (Exception e) {
             throw new FutureFundsException("No investment plan found with given id");
         }

@@ -5,7 +5,6 @@ import java.util.Random;
 import com.cg.futurefunds.dto.*;
 import com.cg.futurefunds.utility.MailSenderUtility;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +56,7 @@ public class UserServiceImpl implements UserService {
 		String body = "Welcome to Future Funds. Your account has been created successfully. Explore our features and start investing today.";
 		mailSenderUtility.sendEmail(to, subject, body);
 
-		return new ResponseDTO("User registered successfully",HttpStatus.CREATED.value(),userResponseDTO);
+		return new ResponseDTO("User registered successfully", userResponseDTO);
 
 	}
 
@@ -80,7 +79,7 @@ public class UserServiceImpl implements UserService {
         UserResponseDTO userResponseDTO = convertToUserResponseDTO(user);
         userResponseDTO.setToken(token);
 
-        return new ResponseDTO("User logged in successfully", HttpStatus.OK.value(), userResponseDTO);
+        return new ResponseDTO("User logged in successfully", userResponseDTO);
 	}
 
 	@Override
@@ -98,7 +97,7 @@ public class UserServiceImpl implements UserService {
 		String body = "Your OTP to reset password is: " + user.getOtp() + ". Please enter this OTP in the reset password form to reset your password.";
 		mailSenderUtility.sendEmail(to, subject, body);
 
-		return new ResponseDTO("Otp sent successfully", HttpStatus.OK.value(), null);
+		return new ResponseDTO("Otp sent successfully", null);
 	}
 
 	@Override
@@ -117,7 +116,7 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 
-		return new ResponseDTO("You can change password only once", HttpStatus.BAD_REQUEST.value(), null);
+		return new ResponseDTO("You can change password only once", null);
 	}
 
 	@Override
@@ -134,7 +133,7 @@ public class UserServiceImpl implements UserService {
 
 		userRepository.save(user);
 
-		return new ResponseDTO("Password reset successfully", HttpStatus.OK.value(), null);
+		return new ResponseDTO("Password reset successfully", null);
 	}
 
 	@Override
@@ -148,7 +147,7 @@ public class UserServiceImpl implements UserService {
 
 		UserResponseDTO userResponseDTO = convertToUserResponseDTO(user);
 
-		return new ResponseDTO("User updated successfully ",HttpStatus.OK.value(),userResponseDTO);
+		return new ResponseDTO("User updated successfully ", userResponseDTO);
 	}
 
 	public UserResponseDTO convertToUserResponseDTO(User user) {

@@ -4,9 +4,13 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
+@Data
+@RequiredArgsConstructor
 public class GoalDTO {
     @NotBlank(message = "Investment ID cannot be empty")
     private Long investmentId;
