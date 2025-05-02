@@ -54,7 +54,34 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     public ResponseDTO updateNotification(Long notificationId, NotificationDTO notificationDTO) {
-        return null;
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new FutureFundsException("Notfication with id "+notificationId+" not found"));
+
+                if(notificationDTO.getInvestmentId()!=null){
+                    InvestmentPlan investmentPlan = investmentPlanRepository.findById(notificationDTO.getInvestmentId())
+                            .orElseThrow(() -> new FutureFundsException("Investment with id "+notificationDTO.getInvestmentId()+" not found"));
+
+                notification.setInvestmentPlan(investmentPlan);
+                notification.setUser(investmentPlan.getUser());
+                }
+                if(notificationDTO.getGoalId()!=null){
+                    Goal goal = goalRepository.findById(notificationDTO.getGoalId())
+                            .orElseThrow(() -> new FutureFundsException("Goal with id "+notificationDTO.getGoalId()+" not found"));
+                    notification.setGoal(goal);
+                    notification.setUser(goal.getUser());
+                }
+                if(notificationDTO.getTitle()!=null) {
+                    notification.setTitle(notificationDTO.getTitle());
+                }
+                if(notificationDTO.getMessage()!=null){
+                    notification.setMessage(notificationDTO.getMessage());
+                }
+                if(notificationDTO.getType()!=null){
+                    notification.setType(notificationDTO.getType());
+                }
+                notificationRepository.save(notification);
+
+                return  new ResponseDTO("Notification updated successfully",200,notification);
     }
 
     @Override
