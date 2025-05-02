@@ -86,7 +86,12 @@ public class NotificationServiceImpl implements NotificationService{
 
     @Override
     public ResponseDTO deleteNotification(Long notificationId) {
-        return null;
+
+            Notification notification=notificationRepository.findById(notificationId)
+                    .orElseThrow(()->new FutureFundsException("No notification found with given id "));
+            notificationRepository.delete(notification);
+            return new ResponseDTO("Notification Deleted successfully", 201, null);
+
     }
 
     @Override
