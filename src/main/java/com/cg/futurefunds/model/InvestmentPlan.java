@@ -1,11 +1,13 @@
 package com.cg.futurefunds.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -36,4 +38,8 @@ public class InvestmentPlan {
 
     @OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
     private Goal goal;
+
+    @OneToMany(mappedBy = "investmentPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Notification> notifications;
 }

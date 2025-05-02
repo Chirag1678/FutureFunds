@@ -1,5 +1,6 @@
 package com.cg.futurefunds.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -27,5 +29,9 @@ public class Goal {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonManagedReference
     private User user;
+
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Notification> notifications;
 }
 
