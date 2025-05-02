@@ -21,7 +21,7 @@ public class FutureFundsExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<ResponseDTO> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("Invalid Date format", e);
-        ResponseDTO responseDTO = new ResponseDTO(message, "Should have date in the format dd MM yyyy");
+        ResponseDTO responseDTO = new ResponseDTO(message, HttpStatus.BAD_REQUEST.value(), "Should have date in the format dd MM yyyy");
         return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
     }
 	
@@ -32,11 +32,11 @@ public class FutureFundsExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .toList();
 
-        return new ResponseEntity<>(new ResponseDTO(message, errorMessages), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ResponseDTO(message, HttpStatus.BAD_REQUEST.value(), errorMessages), HttpStatus.BAD_REQUEST);
     }
 	
 	@ExceptionHandler(FutureFundsException.class)
 	public ResponseEntity<ResponseDTO> handleFutureFundsException(FutureFundsException e) {
-		return new ResponseEntity<>(new ResponseDTO(message, e.getMessage()), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new ResponseDTO(message, HttpStatus.BAD_REQUEST.value(), e.getMessage()), HttpStatus.BAD_REQUEST);
 	}
 }

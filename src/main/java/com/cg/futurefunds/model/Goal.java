@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Goal {
     private String name;
     private double target_value;
     private double progress;
-    private double target_date;
+    private LocalDate target_date;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

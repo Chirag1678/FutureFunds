@@ -2,6 +2,7 @@ package com.cg.futurefunds.service;
 
 import com.cg.futurefunds.dto.*;
 import com.cg.futurefunds.exceptions.FutureFundsException;
+import com.cg.futurefunds.model.Goal;
 import com.cg.futurefunds.model.InvestmentPlan;
 import com.cg.futurefunds.model.NotificationType;
 import com.cg.futurefunds.model.User;
@@ -30,6 +31,9 @@ public class InvestmentServiceImpl implements InvestmentService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private GoalService goalService;
+
     @Override
     public ResponseDTO addInvestment(InvestmentPlanDTO investmentPlanDTO) {
         User user = userRepository.findByEmail(investmentPlanDTO.getUserEmail())
@@ -43,7 +47,23 @@ public class InvestmentServiceImpl implements InvestmentService {
 
         investmentPlanRepository.save(investmentPlan);
 
+        if(investmentPlanDTO.getGoal() != null) {
+            GoalDTO goalDTO = new GoalDTO();
+            goalDTO.setInvestmentId(investmentPlan.getId());
+            goalDTO.setName(investmentPlanDTO.getGoal());
+            goalDTO.setProgress(0);
+            goalDTO.setTargetValue(targetAmount);
+            goalDTO.setTargetDate(investmentPlan.getStartDate().plusMonths(investmentPlanDTO.getDurationMonths()));
+
+            ResponseDTO responseDTO = goalService.addGoal(goalDTO);
+
+            if(responseDTO.getStatusCode() != 201) {
+                throw new FutureFundsException("Failed to add goal");
+            }
+        }
+
         InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
+        investmentResponseDTO.setGoal(investmentPlanDTO.getGoal());
 
         ResponseDTO notificationResponse = createNotification(investmentPlan.getId(), "Investment Plan Created", "Your investment plan has been created successfully.", NotificationType.INVESTMENT_CREATED);
         if(notificationResponse.getStatusCode()==200) {
@@ -148,7 +168,7 @@ public class InvestmentServiceImpl implements InvestmentService {
         return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
-    private static InvestmentPlan getInvestmentPlan(InvestmentPlanDTO investmentPlanDTO, double targetAmount, double currentValue, User user) {
+    private InvestmentPlan getInvestmentPlan(InvestmentPlanDTO investmentPlanDTO, double targetAmount, double currentValue, User user) {
         InvestmentPlan investmentPlan = new InvestmentPlan();
         investmentPlan.setName(investmentPlanDTO.getName());
         investmentPlan.setType(investmentPlanDTO.getType());

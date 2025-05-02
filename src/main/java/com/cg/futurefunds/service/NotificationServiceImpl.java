@@ -104,16 +104,43 @@ public class NotificationServiceImpl implements NotificationService{
 
         if(notification.getInvestmentPlan()!=null) {
             InvestmentResponseDTO investmentResponseDTO = convertToResponse(notification.getInvestmentPlan());
-            body += "\n\nInvestment Plan Details:\n" + investmentResponseDTO;
+            body += "\n\nInvestment Plan Details:\n<p>" + buildInvestmentHtmlTable(investmentResponseDTO) + "</p>" ;
+            try {
+                mailSenderUtility.sendHtmlEmail(to, subject, body);
+                deleteNotification(notificationId);
+                return new ResponseDTO("Notification sent successfully", 200, null);
+            } catch (Exception e) {
+                throw new FutureFundsException("Failed to send email: " + e.getMessage());
+            }
+        } else if(notification.getGoal()!=null) {
+            body += "\n\nGoal Details:\nGoal Name: " + notification.getGoal().getName() + "\n" + "Goal Progress" + notification.getGoal().getProgress() + "%";
+            try {
+                mailSenderUtility.sendEmail(to, subject, body);
+                deleteNotification(notificationId);
+                return new ResponseDTO("Notification sent successfully", 200, null);
+            } catch (Exception e) {
+                throw new FutureFundsException("Failed to send email: " + e.getMessage());
+            }
+        } else {
+            throw new FutureFundsException("Notification does not have Investment Plan or Goal associated with it");
         }
+    }
 
-        try {
-            mailSenderUtility.sendEmail(to, subject, body);
-            deleteNotification(notificationId);
-            return new ResponseDTO("Notification sent successfully", 200, null);
-        } catch (Exception e) {
-            throw new FutureFundsException("Failed to send email: " + e.getMessage());
-        }
+    private String buildInvestmentHtmlTable(InvestmentResponseDTO dto) {
+        return "<h3>Investment Plan Details</h3>" +
+                "<table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse; font-family: Arial;'>" +
+                "<tr><th>Field</th><th>Value</th></tr>" +
+                "<tr><td>Plan Name</td><td>" + dto.getName() + "</td></tr>" +
+                "<tr><td>Amount Invested</td><td>₹" + dto.getMonthlyAmount() + "</td></tr>" +
+                "<tr><td>Start Date</td><td>" + dto.getStartDate() + "</td></tr>" +
+                "<tr><td>Expected Returns</td><td>₹" + dto.getExpectedReturn() + "</td></tr>" +
+                "<tr><td>Duration </td><td>" + dto.getDurationMonths() + "months" + "</td></tr>" +
+                "<tr><td>Maturity Amount </td><td>" + dto.getTargetAmount() + "</td></tr>" +
+                "<tr><td>Current Value </td><td>" + dto.getCurrentValue() + "</td></tr>" +
+                "<tr><td>Start Date</td><td>" + dto.getStartDate() + "</td></tr>" +
+                "<tr><td>User Name</td><td>" + dto.getUser().getName() + "</td></tr>" +
+                "<tr><td>User Email</td><td>" + dto.getUser().getEmail() + "</td></tr>" +
+                "</table>";
     }
 
     public InvestmentResponseDTO convertToResponse(InvestmentPlan investmentPlan) {

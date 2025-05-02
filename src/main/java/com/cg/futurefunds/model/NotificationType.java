@@ -10,6 +10,9 @@ public enum NotificationType {
     INVESTMENT_MATURED,
 
     // Goal milestone notifications
+    GOAL_CREATED,
+    GOAL_UPDATED,
+    GOAL_DELETED,
     GOAL_MILESTONE_25_PERCENT,
     GOAL_MILESTONE_50_PERCENT,
     GOAL_MILESTONE_75_PERCENT,
