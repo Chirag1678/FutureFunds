@@ -20,7 +20,7 @@ public class NotificationController {
     @Autowired
     private JwtUtility jwtUtility;
 
-    @GetMapping("/user")
+    @GetMapping
     public ResponseEntity<ResponseDTO> getNotifications(HttpServletRequest request) {
         String token = getToken(request);
         Long userId = jwtUtility.extractUserId(token);

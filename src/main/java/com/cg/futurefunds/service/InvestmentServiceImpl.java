@@ -181,12 +181,9 @@ public class InvestmentServiceImpl implements InvestmentService {
 
     @Override
     public ResponseDTO simulateInvestment(InvestmentPlanDTO investmentPlanDTO) {
-        User user = userRepository.findByEmail(investmentPlanDTO.getUserEmail())
-                .orElseThrow(() -> new FutureFundsException("User with Email"+investmentPlanDTO.getUserEmail()+"not found"));
-
         double targetAmount = getTargetAmount(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),investmentPlanDTO.getDurationMonths());
 
-        return new ResponseDTO("Simulation Completed\n Expected returns: " + targetAmount, HttpStatus.OK.value(), null);
+        return new ResponseDTO("Simulation Completed, Expected Maturity Amount: " + targetAmount, HttpStatus.OK.value(), null);
     }
 
     @Override

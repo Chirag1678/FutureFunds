@@ -21,7 +21,7 @@ public class ReportController {
     @Autowired
     private JwtUtility jwtUtility;
 
-    @GetMapping("/user/summary")
+    @GetMapping
     public ResponseEntity<ResponseDTO> getSummaryReport(HttpServletRequest request) {
         String token = getToken(request);
         Long userId = jwtUtility.extractUserId(token);
