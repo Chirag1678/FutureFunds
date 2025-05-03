@@ -20,7 +20,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@PostMapping("/register")
+	@PostMapping
 	public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
 		ResponseDTO responseDTO = userService.registerUser(registerDTO);
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
@@ -33,21 +33,21 @@ public class UserController {
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/forgot")
+	@PutMapping("/forgot")
 	public ResponseEntity<ResponseDTO> forgotPassword(@Valid @RequestBody LoginDTO loginDTO) {
 		ResponseDTO responseDTO = userService.forgotPassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/reset")
+	@PutMapping("/reset")
 	public ResponseEntity<ResponseDTO> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
 		ResponseDTO responseDTO = userService.resetPassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/change")
+	@PutMapping("/change")
 	public ResponseEntity<ResponseDTO> changePassword(@Valid @RequestBody LoginDTO loginDTO) {
 		ResponseDTO responseDTO = userService.changePassword(loginDTO);
 
