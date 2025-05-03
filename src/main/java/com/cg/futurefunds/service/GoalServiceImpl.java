@@ -5,6 +5,7 @@ import com.cg.futurefunds.dto.NotificationDTO;
 import com.cg.futurefunds.dto.ResponseDTO;
 import com.cg.futurefunds.exceptions.FutureFundsException;
 import com.cg.futurefunds.model.Goal;
+import com.cg.futurefunds.model.InvestmentPlan;
 import com.cg.futurefunds.model.NotificationType;
 import com.cg.futurefunds.model.User;
 import com.cg.futurefunds.repository.GoalRepository;
@@ -12,8 +13,8 @@ import com.cg.futurefunds.repository.InvestmentPlanRepository;
 import com.cg.futurefunds.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,14 +41,21 @@ public class GoalServiceImpl implements GoalService {
         goal.setProgress(goalDTO.getProgress());
         goal.setTarget_date(goalDTO.getTargetDate());
 
-        goal.setUser(userRepository.findById(goalDTO.getInvestmentId())
-                .orElseThrow(() -> new FutureFundsException("User not found")));
+        InvestmentPlan investmentPlan = investmentPlanRepository.findById(goalDTO.getInvestmentId())
+                        .orElseThrow(() -> new FutureFundsException("Investment Plan with id: " + goalDTO.getInvestmentId() + " not found."));
 
-        Goal savedGoal = goalRepository.save(goal);
+        User user = userRepository.findById(investmentPlan.getUser().getId())
+                        .orElseThrow(() -> new FutureFundsException("User with id: " + investmentPlan.getUser().getId() + " not found."));
+
+        goal.setUser(user);
+        investmentPlan.setGoal(goal);
+
+        goalRepository.save(goal);
+        investmentPlanRepository.save(investmentPlan);
 
         ResponseDTO notificationResponse = createNotification(goal.getId(), "Goal Created Successfully", "New goal created successfully", NotificationType.GOAL_CREATED);
-        if(notificationResponse.getStatusCode()==200) {
-            return new ResponseDTO("Goal added successfully", 201, savedGoal);
+        if(notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+            return new ResponseDTO("Goal added successfully", HttpStatus.CREATED.value(), goal);
         } else {
             throw new FutureFundsException("Goal creation failed");
         }
@@ -63,19 +71,34 @@ public class GoalServiceImpl implements GoalService {
         goal.setTarget_value(goalDTO.getTargetValue());
         goal.setTarget_date(goalDTO.getTargetDate());
 
-        Goal updatedGoal = goalRepository.save(goal);
+        goalRepository.save(goal);
 
-        return new ResponseDTO("Goal updated successfully", 200, updatedGoal);
+        ResponseDTO notificationResponse = createNotification(goal.getId(), "Goal Updated Successfully", "Goal updated successfully", NotificationType.GOAL_UPDATED);
+        if(notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+            return new ResponseDTO("Goal updated successfully", HttpStatus.OK.value(), goal);
+        } else {
+            throw new FutureFundsException("Goal update failed");
+        }
     }
     @Override
     public ResponseDTO deleteGoal(Long goalId) {
-        try {
-            Goal goal = goalRepository.findById(goalId)
-                    .orElseThrow(() -> new FutureFundsException("Goal with id: " + goalId + " not found."));
+        Goal goal = goalRepository.findById(goalId)
+                .orElseThrow(() -> new FutureFundsException("Goal with id: " + goalId + " not found."));
+
+        String goalName = goal.getName();
+
+        ResponseDTO notificationResponse = createNotification(
+                goalId,
+                "Goal Deleted",
+                "Your goal " + goalName + "' has been deleted successfully.",
+                NotificationType.GOAL_DELETED
+        );
+
+        if (notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
             goalRepository.delete(goal);
-            return new ResponseDTO("Goal deleted successfully", 200, null);
-        } catch (Exception e) {
-            throw new FutureFundsException("Error deleting goal: " + e.getMessage());
+            return new ResponseDTO("Goal deleted successfully", HttpStatus.OK.value(), null);
+        } else {
+            throw new FutureFundsException("Goal deletion succeeded, but notification failed");
         }
     }
 
@@ -83,17 +106,21 @@ public class GoalServiceImpl implements GoalService {
     public ResponseDTO getGoal(Long goalId) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new FutureFundsException("Goal with id: " + goalId + " not found."));
-        return new ResponseDTO("Goal retrieved successfully", 200, goal);
+
+        return new ResponseDTO("Goal retrieved successfully", HttpStatus.OK.value(), goal);
     }
+
     @Override
     public ResponseDTO getAllGoals(Long userId) {
-        try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new FutureFundsException("User with id: " + userId + " not found."));
-            List<Goal> goals = goalRepository.findByUser(user);
-            return new ResponseDTO("Goals retrieved successfully", 200, goals);
-        } catch (Exception e) {
-            throw new FutureFundsException("Error retrieving goals: " + e.getMessage());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new FutureFundsException("User with id: " + userId + " not found."));
+
+        List<Goal> goals = goalRepository.findByUser(user);
+
+        if(goals.isEmpty()) {
+            return new ResponseDTO("No goals found", HttpStatus.OK.value(), null);
+        } else {
+            return new ResponseDTO("Goals retrieved successfully", HttpStatus.OK.value(), goals);
         }
     }
 
@@ -107,7 +134,7 @@ public class GoalServiceImpl implements GoalService {
         notificationDTO.setScheduledAt(scheduledAt);
         try {
             notificationService.createNotification(notificationDTO);
-            return new ResponseDTO("Notification created successfully", 200, null);
+            return new ResponseDTO("Notification created successfully", HttpStatus.OK.value(), null);
         } catch (Exception e) {
             throw new FutureFundsException("Notification creation failed");
         }

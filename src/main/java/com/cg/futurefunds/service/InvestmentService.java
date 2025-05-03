@@ -11,5 +11,8 @@ public interface InvestmentService {
     ResponseDTO deleteInvestment(Long investmentId);
     ResponseDTO getAllInvestments(Long userId);
     ResponseDTO getInvestment(Long investmentId);
+    ResponseDTO simulateInvestment(InvestmentPlanDTO investmentPlanDTO);
+    ResponseDTO progressInvestment(Long investmentId);
     InvestmentResponseDTO convertToResponse(InvestmentPlan investmentPlan);
+    ResponseDTO sendSummaryReport(Long userId);
 }

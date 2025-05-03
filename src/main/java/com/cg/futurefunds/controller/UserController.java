@@ -2,6 +2,7 @@ package com.cg.futurefunds.controller;
 
 import com.cg.futurefunds.dto.RegisterDTO;
 import com.cg.futurefunds.dto.UpdateUserDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,5 @@ public class UserController {
 		ResponseDTO responseDTO=userService.updateUserDetails(updateUserDTO);
 
 		return new ResponseEntity<>(responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
-
 	}
 }

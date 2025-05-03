@@ -8,8 +8,10 @@ import com.cg.futurefunds.model.NotificationType;
 import com.cg.futurefunds.model.User;
 import com.cg.futurefunds.repository.InvestmentPlanRepository;
 import com.cg.futurefunds.repository.UserRepository;
+import com.cg.futurefunds.utility.PdfGeneratorUtility;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -34,6 +36,9 @@ public class InvestmentServiceImpl implements InvestmentService {
     @Autowired
     private GoalService goalService;
 
+    @Autowired
+    private PdfGeneratorUtility pdfGeneratorUtility;
+
     @Override
     public ResponseDTO addInvestment(InvestmentPlanDTO investmentPlanDTO) {
         User user = userRepository.findByEmail(investmentPlanDTO.getUserEmail())
@@ -57,7 +62,7 @@ public class InvestmentServiceImpl implements InvestmentService {
 
             ResponseDTO responseDTO = goalService.addGoal(goalDTO);
 
-            if(responseDTO.getStatusCode() != 201) {
+            if(responseDTO.getStatusCode() != HttpStatus.CREATED.value()) {
                 throw new FutureFundsException("Failed to add goal");
             }
         }
@@ -66,8 +71,8 @@ public class InvestmentServiceImpl implements InvestmentService {
         investmentResponseDTO.setGoal(investmentPlanDTO.getGoal());
 
         ResponseDTO notificationResponse = createNotification(investmentPlan.getId(), "Investment Plan Created", "Your investment plan has been created successfully.", NotificationType.INVESTMENT_CREATED);
-        if(notificationResponse.getStatusCode()==200) {
-            return new ResponseDTO("Investment plan added successfully", 200, investmentResponseDTO);
+        if(notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+            return new ResponseDTO("Investment plan added successfully", HttpStatus.OK.value(), investmentResponseDTO);
         } else {
             throw new FutureFundsException("Investment plan creation failed");
         }
@@ -82,47 +87,69 @@ public class InvestmentServiceImpl implements InvestmentService {
         User user = userRepository.findByEmail(investmentPlanDTO.getUserEmail())
                 .orElseThrow(() -> new FutureFundsException("User with Email"+investmentPlanDTO.getUserEmail()+"not found"));
 
-                double targetAmount = getTargetAmount(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),investmentPlanDTO.getDurationMonths());
-                int completedMonths = getCompletedMonths(investmentPlan.getStartDate());
-                double currentValue = calculateCurrentValue(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),completedMonths);
+        double targetAmount = getTargetAmount(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),investmentPlanDTO.getDurationMonths());
+        int completedMonths = getCompletedMonths(investmentPlan.getStartDate());
+        double currentValue = calculateCurrentValue(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),completedMonths);
+        investmentPlan.setName(investmentPlanDTO.getName());
+        investmentPlan.setType(investmentPlanDTO.getType());
+        investmentPlan.setMonthly_amount(investmentPlanDTO.getMonthlyAmount());
+        investmentPlan.setExpected_return(investmentPlanDTO.getExpectedReturn());
+        investmentPlan.setDuration_months(investmentPlanDTO.getDurationMonths());
+        investmentPlan.setTarget_amount(targetAmount);
+        investmentPlan.setCurrent_value(currentValue);
+        investmentPlan.setUser(user);
 
-                investmentPlan.setName(investmentPlanDTO.getName());
-                investmentPlan.setType(investmentPlanDTO.getType());
-                investmentPlan.setMonthly_amount(investmentPlanDTO.getMonthlyAmount());
-                investmentPlan.setExpected_return(investmentPlanDTO.getExpectedReturn());
-                investmentPlan.setDuration_months(investmentPlanDTO.getDurationMonths());
-                investmentPlan.setTarget_amount(targetAmount);
-                investmentPlan.setCurrent_value(currentValue);
-                investmentPlan.setUser(user);
+        investmentPlanRepository.save(investmentPlan);
 
-                investmentPlanRepository.save(investmentPlan);
+        if(investmentPlanDTO.getGoal() != null) {
+            GoalDTO goalDTO = new GoalDTO();
+            goalDTO.setInvestmentId(investmentPlan.getId());
+            goalDTO.setName(investmentPlanDTO.getGoal());
+            goalDTO.setProgress(investmentPlan.getCurrent_value() / investmentPlan.getTarget_amount() * 100.0);
+            goalDTO.setTargetValue(targetAmount);
+            goalDTO.setTargetDate(investmentPlan.getStartDate().plusMonths(investmentPlanDTO.getDurationMonths()));
 
-                InvestmentResponseDTO responseDTO = convertToResponse(investmentPlan);
+            Long goalId = investmentPlan.getGoal().getId();
+            ResponseDTO responseDTO = goalService.updateGoal(goalId, goalDTO);
 
-                ResponseDTO notificationResponse = createNotification(investmentPlan.getId(), "Investment Plan Updated", "Your investment plan has been updated successfully.", NotificationType.INVESTMENT_UPDATED);
-                if(notificationResponse.getStatusCode()==200) {
-                    return new ResponseDTO("Investment plan updated successfully", 200, responseDTO);
-                } else {
-                    throw new FutureFundsException("Investment plan update failed");
-                }
+            if(responseDTO.getStatusCode() != HttpStatus.OK.value()) {
+                throw new FutureFundsException("Failed to update goal");
+            }
+        }
+
+        InvestmentResponseDTO responseDTO = convertToResponse(investmentPlan);
+        responseDTO.setGoal(investmentPlanDTO.getGoal());
+
+        ResponseDTO notificationResponse = createNotification(investmentPlan.getId(), "Investment Plan Updated", "Your investment plan has been updated successfully.", NotificationType.INVESTMENT_UPDATED);
+        if(notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+            return new ResponseDTO("Investment plan updated successfully", HttpStatus.OK.value(), responseDTO);
+        } else {
+            throw new FutureFundsException("Investment plan update failed");
+        }
     }
 
     @Override
     public ResponseDTO deleteInvestment(Long investmentId) {
-        InvestmentPlan investmentPlan=investmentPlanRepository.findById(investmentId)
-                .orElseThrow(() -> new FutureFundsException("Investment with Id" + investmentId + "not found"));
+        InvestmentPlan investmentPlan = investmentPlanRepository.findById(investmentId)
+                .orElseThrow(() -> new FutureFundsException("Investment with Id " + investmentId + " not found"));
 
-        investmentPlanRepository.delete(investmentPlan);
+        String investmentName = investmentPlan.getName();
 
-        InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
+        ResponseDTO notificationResponse = createNotification(
+                investmentId,
+                "Investment Plan Deleted",
+                "Your investment plan '" + investmentName + "' has been deleted successfully.",
+                NotificationType.INVESTMENT_DELETED
+        );
 
-        ResponseDTO notificationResponse = createNotification(investmentPlan.getId(), "Investment Plan Deleted", "Your investment plan has been deleted successfully.", NotificationType.INVESTMENT_DELETED);
-        if(notificationResponse.getStatusCode()==200) {
-            return new ResponseDTO("Investment plan deleted successfully", 200, investmentResponseDTO);
+        if (notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+            investmentPlanRepository.delete(investmentPlan);
+            return new ResponseDTO("Investment plan deleted successfully", HttpStatus.OK.value(), null);
         } else {
-            throw new FutureFundsException("Investment plan deletion failed");
+            throw new FutureFundsException("Investment plan deletion succeeded, but notification failed");
         }
     }
+
 
     @Override
     public ResponseDTO getAllInvestments(Long userId) {
@@ -132,12 +159,13 @@ public class InvestmentServiceImpl implements InvestmentService {
         List<InvestmentPlan> plans = investmentPlanRepository.findByUserId(userId);
 
         if(plans.isEmpty()){
-            return  new ResponseDTO("No Investment plans found by user",404,null);
+            return  new ResponseDTO("No Investment plans found by user",HttpStatus.NOT_FOUND.value(), null);
         }
         List<InvestmentResponseDTO> investmentResponseDTOList = plans.stream()
                 .map(this::convertToResponse)
-                .collect(Collectors.toList());
-        return new ResponseDTO("Investment Plans Retrieved Successfully",200,investmentResponseDTOList);
+                .toList();
+
+        return new ResponseDTO("Investment Plans Retrieved successfully", HttpStatus.OK.value(), investmentResponseDTOList);
 
     }
 
@@ -148,7 +176,49 @@ public class InvestmentServiceImpl implements InvestmentService {
 
         InvestmentResponseDTO investmentResponseDTO = convertToResponse(investmentPlan);
 
-        return new ResponseDTO("Investment Plan Details", 200, investmentResponseDTO);
+        return new ResponseDTO("Investment Plan Details", HttpStatus.OK.value(), investmentResponseDTO);
+    }
+
+    @Override
+    public ResponseDTO simulateInvestment(InvestmentPlanDTO investmentPlanDTO) {
+        User user = userRepository.findByEmail(investmentPlanDTO.getUserEmail())
+                .orElseThrow(() -> new FutureFundsException("User with Email"+investmentPlanDTO.getUserEmail()+"not found"));
+
+        double targetAmount = getTargetAmount(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),investmentPlanDTO.getDurationMonths());
+
+        return new ResponseDTO("Simulation Completed\n Expected returns: " + targetAmount, HttpStatus.OK.value(), null);
+    }
+
+    @Override
+    public ResponseDTO progressInvestment(Long investmentId) {
+        InvestmentPlan investmentPlan = investmentPlanRepository.findById(investmentId)
+                .orElseThrow(() -> new FutureFundsException("Investment with Id" + investmentId + "not found"));
+
+        double progress = investmentPlan.getCurrent_value() / investmentPlan.getTarget_amount() * 100.0;
+
+        return new ResponseDTO("Progress till now: " + progress + "%", HttpStatus.OK.value(), null);
+    }
+
+    @Override
+    public ResponseDTO sendSummaryReport(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new FutureFundsException("User with id"+ userId +"does not exist"));
+
+        List<InvestmentPlan> plans = investmentPlanRepository.findByUserId(userId);
+
+        if(plans.isEmpty()){
+            return  new ResponseDTO("No Investment plans found by user",HttpStatus.NOT_FOUND.value(), null);
+        }
+        List<InvestmentResponseDTO> investmentResponseDTOList = plans.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+
+        String filePath = "src/main/resources/static/pdf/investmentPlans.pdf";
+        pdfGeneratorUtility.generateInvestmentPdf(investmentResponseDTOList,filePath);
+
+        notificationService.sendPdfNotification(user.getEmail(), filePath);
+
+        return new ResponseDTO("Report generated and sent successfully", HttpStatus.OK.value(), null);
     }
 
     public Double getTargetAmount(Double monthlyAmount, Double expectedReturn, Integer durationMonths) {
@@ -220,7 +290,7 @@ public class InvestmentServiceImpl implements InvestmentService {
         notificationDTO.setScheduledAt(scheduledAt);
         try {
             notificationService.createNotification(notificationDTO);
-            return new ResponseDTO("Notification created successfully", 200, null);
+            return new ResponseDTO("Notification created successfully", HttpStatus.OK.value(), null);
         } catch (Exception e) {
             throw new FutureFundsException("Notification creation failed");
         }

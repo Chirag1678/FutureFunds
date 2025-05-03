@@ -30,9 +30,5 @@ public class Goal {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonManagedReference
     private User user;
-
-    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
-    private List<Notification> notifications;
 }
 

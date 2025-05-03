@@ -42,10 +42,6 @@ public class User implements UserDetails {
     @JsonBackReference
     private List<Goal> goals;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
-    private List<Notification> notifications;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("USER"));

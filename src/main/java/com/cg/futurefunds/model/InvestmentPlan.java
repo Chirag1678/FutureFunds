@@ -37,10 +37,6 @@ public class InvestmentPlan {
     @JsonManagedReference
     private User user;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(optional = true)
     private Goal goal;
-
-    @OneToMany(mappedBy = "investmentPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
-    private List<Notification> notifications;
 }

@@ -26,20 +26,7 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonManagedReference
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "investment_plan_id", nullable = true)
-    @JsonManagedReference
-    private InvestmentPlan investmentPlan;
-
-    @ManyToOne
-    @JoinColumn(name = "goal_id", nullable = true)
-    @JsonManagedReference
-    private Goal goal;
-
+    private Long investment;
+    private Long goal;
+    private Long user;
 }

@@ -1,9 +1,11 @@
 package com.cg.futurefunds.service;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 
 import com.cg.futurefunds.dto.*;
-import com.cg.futurefunds.utility.MailSenderUtility;
+import com.cg.futurefunds.model.NotificationType;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +28,7 @@ public class UserServiceImpl implements UserService {
 	private BCryptPasswordEncoder encoder;
 
 	@Autowired
-	private MailSenderUtility mailSenderUtility;
+	private NotificationService notificationService;
 
 	private  String generateOtp(){
 		Random random = new Random();
@@ -52,13 +54,15 @@ public class UserServiceImpl implements UserService {
 		userResponseDTO.setEmail(user.getEmail());
 		userResponseDTO.setVerified(user.isVerified());
 
-		String to = user.getEmail();
-		String subject = "Welcome to Future Funds";
-		String body = "Welcome to Future Funds. Your account has been created successfully. Explore our features and start investing today.";
-		mailSenderUtility.sendEmail(to, subject, body);
+		String title = "Welcome to Future Funds";
+		String message = "Welcome to Future Funds. Your account has been created successfully. Explore our features and start investing today.\n\n User details:\nName: " + user.getName() + "\nEmail: " + user.getEmail() + "\n\nThank you for using Future Funds. We hope you enjoy our services.";
+		ResponseDTO notificationResponse = createNotification(user.getId(), title, message, NotificationType.USER_CREATED);
 
-		return new ResponseDTO("User registered successfully", HttpStatus.CREATED.value(), userResponseDTO);
-
+		if(notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+			return new ResponseDTO("User registered successfully", HttpStatus.CREATED.value(), userResponseDTO);
+		} else {
+			throw new FutureFundsException("User registration failed");
+		}
 	}
 
 	@Override
@@ -73,7 +77,6 @@ public class UserServiceImpl implements UserService {
         if (!encoder.matches(loginDTO.getPassword(), user.getPassword())) {
             throw new FutureFundsException("Invalid login credentials, try again.");
         }
-
 
         String token = jwtUtility.generateToken(loginDTO.getEmail(), user.getId());
 
@@ -93,12 +96,15 @@ public class UserServiceImpl implements UserService {
 
 		userRepository.save(user);
 
-		String to = user.getEmail();
-		String subject = "OTP to reset password";
-		String body = "Your OTP to reset password is: " + user.getOtp() + ". Please enter this OTP in the reset password form to reset your password.";
-		mailSenderUtility.sendEmail(to, subject, body);
+		String title = "OTP to reset password";
+		String message = "Your OTP to reset password is: " + user.getOtp() + ". Please enter this OTP in the reset password form to reset your password.";
+		ResponseDTO notificationResponse = createNotification(user.getId(), title, message, NotificationType.USR_PASSWORD_RESET);
 
-		return new ResponseDTO("Otp sent successfully", HttpStatus.OK.value(), null);
+		if(notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+			return new ResponseDTO("Otp sent successfully", HttpStatus.OK.value(), null);
+		} else {
+			throw new FutureFundsException("Otp sending failed");
+		}
 	}
 
 	@Override
@@ -111,7 +117,7 @@ public class UserServiceImpl implements UserService {
 				user.setOtp(null);
 				user.setVerified(true);
 				userRepository.save(user);
-				return resetPassword(loginDTO);
+				return changePassword(loginDTO);
 			} else {
 				throw new FutureFundsException("Invalid otp, try again");
 			}
@@ -148,7 +154,15 @@ public class UserServiceImpl implements UserService {
 
 		UserResponseDTO userResponseDTO = convertToUserResponseDTO(user);
 
-		return new ResponseDTO("User updated successfully ", HttpStatus.OK.value(), userResponseDTO);
+		String title = "User details updated";
+		String message = "User details updated\n\n New Details:\n name: " + user.getName() + ", email: " + user.getEmail();
+		ResponseDTO notificationResponse = createNotification(user.getId(), title, message, NotificationType.USER_UPDATED);
+
+		if(notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+			return new ResponseDTO("User details updated successfully", HttpStatus.OK.value(), userResponseDTO);
+		} else {
+			throw new FutureFundsException("User details update failed");
+		}
 	}
 
 	public UserResponseDTO convertToUserResponseDTO(User user) {
@@ -157,5 +171,21 @@ public class UserServiceImpl implements UserService {
 		userResponseDTO.setEmail(user.getEmail());
 		userResponseDTO.setVerified(user.isVerified());
 		return userResponseDTO;
+	}
+
+	public ResponseDTO createNotification(@Valid Long userId, @Valid String title, @Valid String message, @Valid NotificationType type) {
+		NotificationDTO notificationDTO = new NotificationDTO();
+		notificationDTO.setUserId(userId);
+		notificationDTO.setTitle(title);
+		notificationDTO.setMessage(message);
+		notificationDTO.setType(type);
+		String scheduledAt = LocalDateTime.now().toString(); // e.g. "2025-05-02T15:30:00"
+		notificationDTO.setScheduledAt(scheduledAt);
+		try {
+			notificationService.createNotification(notificationDTO);
+			return new ResponseDTO("Notification created successfully", HttpStatus.OK.value(), null);
+		} catch (Exception e) {
+			throw new FutureFundsException("Notification creation failed");
+		}
 	}
 }
