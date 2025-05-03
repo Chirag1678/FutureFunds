@@ -20,6 +20,7 @@ public class InvestmentResponseDTO {
     private double targetAmount;
     private double currentValue;
     private LocalDate startDate;
+    private LocalDate endDate;
     private String goal;
     private UserResponseDTO user;
 }

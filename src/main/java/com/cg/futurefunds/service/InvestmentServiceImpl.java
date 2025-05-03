@@ -2,7 +2,6 @@ package com.cg.futurefunds.service;
 
 import com.cg.futurefunds.dto.*;
 import com.cg.futurefunds.exceptions.FutureFundsException;
-import com.cg.futurefunds.model.Goal;
 import com.cg.futurefunds.model.InvestmentPlan;
 import com.cg.futurefunds.model.NotificationType;
 import com.cg.futurefunds.model.User;
@@ -88,7 +87,7 @@ public class InvestmentServiceImpl implements InvestmentService {
                 .orElseThrow(() -> new FutureFundsException("User with Email"+investmentPlanDTO.getUserEmail()+"not found"));
 
         double targetAmount = getTargetAmount(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),investmentPlanDTO.getDurationMonths());
-        int completedMonths = getCompletedMonths(investmentPlan.getStartDate());
+        int completedMonths = investmentPlan.getMonths_passed();
         double currentValue = calculateCurrentValue(investmentPlanDTO.getMonthlyAmount(),investmentPlanDTO.getExpectedReturn(),completedMonths);
         investmentPlan.setName(investmentPlanDTO.getName());
         investmentPlan.setType(investmentPlanDTO.getType());
@@ -245,7 +244,9 @@ public class InvestmentServiceImpl implements InvestmentService {
         investmentPlan.setTarget_amount(targetAmount);
         investmentPlan.setCurrent_value(currentValue);
         investmentPlan.setStartDate(LocalDate.now());
+        investmentPlan.setEndDate(LocalDate.now().plusMonths(investmentPlanDTO.getDurationMonths()));
         investmentPlan.setNextPaymentDate(LocalDate.now().plusMonths(1));
+        investmentPlan.setMonths_passed(0);
         investmentPlan.setUser(user);
         return investmentPlan;
     }
@@ -267,6 +268,7 @@ public class InvestmentServiceImpl implements InvestmentService {
         investmentResponseDTO.setTargetAmount(investmentPlan.getTarget_amount());
         investmentResponseDTO.setCurrentValue(investmentPlan.getCurrent_value());
         investmentResponseDTO.setStartDate(investmentPlan.getStartDate());
+        investmentResponseDTO.setEndDate(investmentPlan.getEndDate());
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setName(investmentPlan.getUser().getName());

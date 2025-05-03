@@ -18,8 +18,14 @@ public class NotificationScheduler {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private TransactionService transactionService;
+
     @Scheduled(fixedRate = 60000)
     public void scheduleNotifications() {
+        transactionService.dueDateNotification();
+        transactionService.investmentMaturedNotification();
+        transactionService.paymentConfirmationNotification();
         List<Notification> notifications = notificationRepository.findByScheduledAtLessThanEqual(LocalDateTime.now());
 
         for(Notification notification: notifications) {

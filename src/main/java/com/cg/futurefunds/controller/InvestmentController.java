@@ -3,6 +3,7 @@ package com.cg.futurefunds.controller;
 import com.cg.futurefunds.dto.InvestmentPlanDTO;
 import com.cg.futurefunds.dto.ResponseDTO;
 import com.cg.futurefunds.service.InvestmentService;
+import com.cg.futurefunds.service.TransactionService;
 import com.cg.futurefunds.utility.JwtUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class InvestmentController {
     @Autowired
     private InvestmentService investmentService;
+
+    @Autowired
+    private TransactionService transactionService;
 
     @Autowired
     private JwtUtility jwtUtility;
@@ -76,6 +80,13 @@ public class InvestmentController {
         ResponseDTO responseDTO = investmentService.progressInvestment(id);
 
         return new ResponseEntity<>(responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
+    }
+
+    @GetMapping("/pay/{id}")
+    public ResponseEntity<ResponseDTO> payInvestment(@PathVariable Long id) {
+        ResponseDTO responseDTO = transactionService.payment(id);
+
+        return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
     }
 
     public String getToken(HttpServletRequest request) {
