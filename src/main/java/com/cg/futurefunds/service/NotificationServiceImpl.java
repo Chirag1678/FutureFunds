@@ -125,9 +125,11 @@ public class NotificationServiceImpl implements NotificationService{
                 throw new FutureFundsException("Failed to send email: " + e.getMessage());
             }
         } else if(notification.getGoal()!=null) {
-            Goal goal = goalRepository.findById(notification.getGoal())
-                    .orElseThrow(() -> new FutureFundsException("Goal with id: " + notification.getGoal() + " not exits."));
-            body += "\n\nGoal Details:\nGoal Name: " + goal.getName() + "\n" + "Goal Progress: " + goal.getProgress() + "%";
+            if (notification.getType() != NotificationType.GOAL_DELETED) {
+                Goal goal = goalRepository.findById(notification.getGoal())
+                        .orElseThrow(() -> new FutureFundsException("Goal with id: " + notification.getGoal() + " not exits."));
+                body += "\n\nGoal Details:\nGoal Name: " + goal.getName() + "\n" + "Goal Progress: " + goal.getProgress() + "%";
+            }
             try {
                 mailSenderUtility.sendEmail(to, subject, body);
                 deleteNotification(notificationId);

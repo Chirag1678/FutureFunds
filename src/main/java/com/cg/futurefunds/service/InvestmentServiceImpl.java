@@ -55,9 +55,6 @@ public class InvestmentServiceImpl implements InvestmentService {
             GoalDTO goalDTO = new GoalDTO();
             goalDTO.setInvestmentId(investmentPlan.getId());
             goalDTO.setName(investmentPlanDTO.getGoal());
-            goalDTO.setProgress(0);
-            goalDTO.setTargetValue(targetAmount);
-            goalDTO.setTargetDate(investmentPlan.getStartDate().plusMonths(investmentPlanDTO.getDurationMonths()));
 
             ResponseDTO responseDTO = goalService.addGoal(goalDTO);
 
@@ -104,9 +101,6 @@ public class InvestmentServiceImpl implements InvestmentService {
             GoalDTO goalDTO = new GoalDTO();
             goalDTO.setInvestmentId(investmentPlan.getId());
             goalDTO.setName(investmentPlanDTO.getGoal());
-            goalDTO.setProgress(investmentPlan.getCurrent_value() / investmentPlan.getTarget_amount() * 100.0);
-            goalDTO.setTargetValue(targetAmount);
-            goalDTO.setTargetDate(investmentPlan.getStartDate().plusMonths(investmentPlanDTO.getDurationMonths()));
 
             Long goalId = investmentPlan.getGoal().getId();
             ResponseDTO responseDTO = goalService.updateGoal(goalId, goalDTO);

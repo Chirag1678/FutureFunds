@@ -25,6 +25,7 @@ public class Goal {
     private double target_value;
     private double progress;
     private LocalDate target_date;
+    private Long investment;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

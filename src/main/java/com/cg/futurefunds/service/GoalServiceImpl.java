@@ -35,18 +35,18 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     public ResponseDTO addGoal(GoalDTO goalDTO) {
-        Goal goal = new Goal();
-        goal.setName(goalDTO.getName());
-        goal.setTarget_value(goalDTO.getTargetValue());
-        goal.setProgress(goalDTO.getProgress());
-        goal.setTarget_date(goalDTO.getTargetDate());
-
         InvestmentPlan investmentPlan = investmentPlanRepository.findById(goalDTO.getInvestmentId())
                         .orElseThrow(() -> new FutureFundsException("Investment Plan with id: " + goalDTO.getInvestmentId() + " not found."));
 
         User user = userRepository.findById(investmentPlan.getUser().getId())
                         .orElseThrow(() -> new FutureFundsException("User with id: " + investmentPlan.getUser().getId() + " not found."));
 
+        Goal goal = new Goal();
+        goal.setName(goalDTO.getName());
+        goal.setTarget_value(investmentPlan.getTarget_amount());
+        goal.setProgress(investmentPlan.getCurrent_value() / investmentPlan.getTarget_amount() * 100);
+        goal.setTarget_date(investmentPlan.getEndDate());
+        goal.setInvestment(investmentPlan.getId());
         goal.setUser(user);
         investmentPlan.setGoal(goal);
 
@@ -67,9 +67,6 @@ public class GoalServiceImpl implements GoalService {
                 .orElseThrow(() -> new FutureFundsException("Goal with Id " + goalId + " not found"));
 
         goal.setName(goalDTO.getName());
-        goal.setProgress(goalDTO.getProgress());
-        goal.setTarget_value(goalDTO.getTargetValue());
-        goal.setTarget_date(goalDTO.getTargetDate());
 
         goalRepository.save(goal);
 
@@ -85,6 +82,9 @@ public class GoalServiceImpl implements GoalService {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new FutureFundsException("Goal with id: " + goalId + " not found."));
 
+        InvestmentPlan investmentPlan = goal.getInvestment() != null ? investmentPlanRepository.findById(goal.getInvestment())
+                .orElseThrow(() -> new FutureFundsException("Investment Plan with id: " + goal.getInvestment() + " not found.")) : null;
+
         String goalName = goal.getName();
 
         ResponseDTO notificationResponse = createNotification(
@@ -95,6 +95,8 @@ public class GoalServiceImpl implements GoalService {
         );
 
         if (notificationResponse.getStatusCode() == HttpStatus.OK.value()) {
+            investmentPlan.setGoal(null);
+            investmentPlanRepository.save(investmentPlan);
             goalRepository.delete(goal);
             return new ResponseDTO("Goal deleted successfully", HttpStatus.OK.value(), null);
         } else {
