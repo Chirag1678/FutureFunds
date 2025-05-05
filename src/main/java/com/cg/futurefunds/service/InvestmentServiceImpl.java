@@ -92,7 +92,8 @@ public class InvestmentServiceImpl implements InvestmentService {
         investmentPlan.setExpected_return(investmentPlanDTO.getExpectedReturn());
         investmentPlan.setDuration_months(investmentPlanDTO.getDurationMonths());
         investmentPlan.setTarget_amount(targetAmount);
-        investmentPlan.setCurrent_value(currentValue);
+        double currentValueFormatted = BigDecimal.valueOf(currentValue).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        investmentPlan.setCurrent_value(currentValueFormatted);
         investmentPlan.setUser(user);
 
         investmentPlanRepository.save(investmentPlan);
@@ -236,7 +237,8 @@ public class InvestmentServiceImpl implements InvestmentService {
         investmentPlan.setExpected_return(investmentPlanDTO.getExpectedReturn());
         investmentPlan.setDuration_months(investmentPlanDTO.getDurationMonths());
         investmentPlan.setTarget_amount(targetAmount);
-        investmentPlan.setCurrent_value(currentValue);
+        double currentValueFormatted = BigDecimal.valueOf(currentValue).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        investmentPlan.setCurrent_value(currentValueFormatted);
         investmentPlan.setStartDate(LocalDate.now());
         investmentPlan.setEndDate(LocalDate.now().plusMonths(investmentPlanDTO.getDurationMonths()));
         investmentPlan.setNextPaymentDate(LocalDate.now().plusMonths(1));

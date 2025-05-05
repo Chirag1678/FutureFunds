@@ -7,4 +7,5 @@ public interface TransactionService {
     ResponseDTO dueDateNotification();
     ResponseDTO paymentConfirmationNotification();
     ResponseDTO investmentMaturedNotification();
+    ResponseDTO goalAchievementNotification();
 }

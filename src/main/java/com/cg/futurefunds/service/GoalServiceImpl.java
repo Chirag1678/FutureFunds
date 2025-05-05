@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,9 +46,12 @@ public class GoalServiceImpl implements GoalService {
         Goal goal = new Goal();
         goal.setName(goalDTO.getName());
         goal.setTarget_value(investmentPlan.getTarget_amount());
-        goal.setProgress(investmentPlan.getCurrent_value() / investmentPlan.getTarget_amount() * 100);
+        double progress = (investmentPlan.getCurrent_value() / investmentPlan.getTarget_amount()) * 100;
+        double formattedProgress = BigDecimal.valueOf(progress).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        goal.setProgress(formattedProgress);
         goal.setTarget_date(investmentPlan.getEndDate());
         goal.setInvestment(investmentPlan.getId());
+        goal.setMilestone("null");
         goal.setUser(user);
         investmentPlan.setGoal(goal);
 

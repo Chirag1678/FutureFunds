@@ -26,6 +26,7 @@ public class NotificationScheduler {
         transactionService.dueDateNotification();
         transactionService.investmentMaturedNotification();
         transactionService.paymentConfirmationNotification();
+        transactionService.goalAchievementNotification();
         List<Notification> notifications = notificationRepository.findByScheduledAtLessThanEqual(LocalDateTime.now());
 
         for(Notification notification: notifications) {

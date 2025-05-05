@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class Goal {
     private double progress;
     private LocalDate target_date;
     private Long investment;
+    private String milestone;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
