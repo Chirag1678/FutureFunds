@@ -1,5 +1,6 @@
 package com.cg.futurefunds.dto;
 
+import com.cg.futurefunds.model.Goal;
 import com.cg.futurefunds.model.InvestmentType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -19,5 +20,7 @@ public class InvestmentResponseDTO {
     private double targetAmount;
     private double currentValue;
     private LocalDate startDate;
+    private LocalDate endDate;
+    private String goal;
     private UserResponseDTO user;
 }

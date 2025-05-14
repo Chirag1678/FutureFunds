@@ -10,8 +10,8 @@ public interface UserService {
 	ResponseDTO userLogin(LoginDTO loginDto);
 	ResponseDTO registerUser(RegisterDTO registerDTO);
 	ResponseDTO forgotPassword(LoginDTO loginDTO);
-	ResponseDTO userVerification(LoginDTO loginDTO);
 	ResponseDTO resetPassword(LoginDTO loginDTO);
+	ResponseDTO changePassword(LoginDTO loginDTO);
 
     ResponseDTO updateUserDetails(UpdateUserDTO updateUserDTO);
 }

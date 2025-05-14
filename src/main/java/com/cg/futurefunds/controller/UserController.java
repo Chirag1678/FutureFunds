@@ -2,6 +2,7 @@ package com.cg.futurefunds.controller;
 
 import com.cg.futurefunds.dto.RegisterDTO;
 import com.cg.futurefunds.dto.UpdateUserDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@PostMapping("/register")
+	@PostMapping
 	public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
 		ResponseDTO responseDTO = userService.registerUser(registerDTO);
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
@@ -32,23 +33,23 @@ public class UserController {
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/forgot")
+	@PutMapping("/forgot")
 	public ResponseEntity<ResponseDTO> forgotPassword(@Valid @RequestBody LoginDTO loginDTO) {
 		ResponseDTO responseDTO = userService.forgotPassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/verify")
-	public ResponseEntity<ResponseDTO> userVerification(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = userService.userVerification(loginDTO);
+	@PutMapping("/reset")
+	public ResponseEntity<ResponseDTO> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
+		ResponseDTO responseDTO = userService.resetPassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
 
-	@PostMapping("/reset")
-	public ResponseEntity<ResponseDTO> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
-		ResponseDTO responseDTO = userService.resetPassword(loginDTO);
+	@PutMapping("/change")
+	public ResponseEntity<ResponseDTO> changePassword(@Valid @RequestBody LoginDTO loginDTO) {
+		ResponseDTO responseDTO = userService.changePassword(loginDTO);
 
 		return new ResponseEntity<>(responseDTO, HttpStatusCode.valueOf(responseDTO.getStatusCode()));
 	}
@@ -58,6 +59,5 @@ public class UserController {
 		ResponseDTO responseDTO=userService.updateUserDetails(updateUserDTO);
 
 		return new ResponseEntity<>(responseDTO,HttpStatusCode.valueOf(responseDTO.getStatusCode()));
-
 	}
 }

@@ -1,12 +1,16 @@
 package com.cg.futurefunds.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +25,9 @@ public class Goal {
     private String name;
     private double target_value;
     private double progress;
-    private double target_date;
+    private LocalDate target_date;
+    private Long investment;
+    private String milestone;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

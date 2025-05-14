@@ -27,4 +27,7 @@ public class InvestmentPlanDTO {
 
     @Positive(message = "Duration must be greater than 0")
     private int durationMonths;
+
+    @Size(min = 4, max = 100, message = "Goal must not exceed 100 characters")
+    private String goal;
 }
